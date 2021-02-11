@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Some chat</title>
+</head>
+<body>
+    <h1>Editor</h1>
+
+    <form id="form" action="">
+    <textarea id="input" rows="4" cols="50">
+      </textarea>
+      <br><br>
+      <button>Apply</button>
+    </form>
+      <script src="/socket.io/socket.io.js"></script>
+      <script>
+        const socket = io();  
+
+        const form = document.getElementById('form');
+        const input = document.getElementById('input');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (input.value) {
+                socket.emit('chat message', input.value);
+            }
+        })
+      </script>
+</body>
+</html>
