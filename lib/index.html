@@ -1,23 +1,21 @@
 <!doctype html>
 <html>
     <head>
-        <title>Some chat</title>
+        <title>Editor</title>
 </head>
 <body>
-    <h1>Editor</h1>
-
+  <div id="editor1">
+    <style>.cm-wrap{height: 150px; width: 150px;}</style>
+    <h1>Editor 1</h1>
     <form id="form" action="">
-    <textarea id="input" rows="4" cols="50">
-      </textarea>
-      <br><br>
-      <button>Apply</button>
     </form>
-      <script src="/socket.io/socket.io.js"></script>
+    <script src="/dist/editor.bundle.js"></script>
+    <script src="/socket.io/socket.io.js"></script> 
       <script>
         const socket = io();  
 
         const form = document.getElementById('form');
-        const input = document.getElementById('input');
+        const input = document.getElementById('editor');
 
         form.addEventListener('submit', function(e) {
             e.preventDefault();
@@ -26,5 +24,16 @@
             }
         })
       </script>
+       </div>
+       <div id="editor2">
+        <script src="/dist/editor.bundle.js"></script>
+        <h1>Editor 2</h1>
+       </div>
+  <table id="Table places" style="width:100%">
+    <tr>
+      <th>Error</th>
+      <th>Line</th> 
+    </tr>
+  </table>
 </body>
 </html>

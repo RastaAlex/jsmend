@@ -11,4 +11,5 @@ module.exports = {
     'watch:coverage': () => run('watcher', 'npm run coverage'),
     'watch:test': () => run('watcher', 'npm test'),
     'watcher': () => 'nodemon -w test -w --exec',
+    'build': () => 'rollup lib/editor.js -f iife -o dist/editor.bundle.js -p @rollup/plugin-node-resolve'
 };
