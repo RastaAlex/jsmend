@@ -15,7 +15,8 @@
     "watch:coverage": "madrun watch:coverage",
     "watch:test": "madrun watch:test",
     "watcher": "madrun watcher",
-    "build": "madrun build"
+    "build": "madrun build",
+    "start": "node ./lib/jsmend.js"
   },
   "keywords": [],
   "author": "",
