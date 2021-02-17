@@ -4,29 +4,16 @@
         <title>Editor</title>
 </head>
 <body>
-  <div id="editor1">
+  <button type="submit" id= "button1">Apply</button>
+  <header>
     <style>.cm-wrap{height: 150px; width: 150px;}</style>
-    <h1>Editor 1</h1>
+  </header>
+  <div id="editorRow">
+  <h1>Editor 1</h1>
     <form id="form" action="">
     </form>
-    <script src="/dist/editor.bundle.js"></script>
-    <script src="/socket.io/socket.io.js"></script> 
-      <script>
-        const socket = io();  
-
-        const form = document.getElementById('form');
-        const input = document.getElementById('editor');
-
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            if (input.value) {
-                socket.emit('chat message', input.value);
-            }
-        })
-      </script>
        </div>
-       <div id="editor2">
-        <script src="/dist/editor.bundle.js"></script>
+       <div id="editorTransformed">
         <h1>Editor 2</h1>
        </div>
   <table id="Table places" style="width:100%">
@@ -35,5 +22,27 @@
       <th>Line</th> 
     </tr>
   </table>
+  <script src="/dist/editor.bundle.js"></script>
+    <script src="/socket.io/socket.io.js"></script> 
+      <script>
+        const socket = io();  
+
+        const form = document.querySelector('#form');
+        const button1 = document.querySelector('#button1');
+        const editorRow = document.querySelector('#editorRow');
+        const editorTransformed = document.querySelector('#editorTransformed');
+
+        // editorRow.addEventListener('keyup', (evt) => {
+        //   evt.preventDefault();
+        //   const data = editorRow.value;
+        // })
+        
+        editorTransformed.addEventListener('change', (evt) => {
+          evt.preventDefault();
+          if (editorRow.value) {
+            editorTransformed.value = editorRow.value;
+          }
+        })
+      </script>
 </body>
 </html>
