@@ -32,10 +32,10 @@
         const editorRow = document.querySelector('#editorRow');
         const editorTransformed = document.querySelector('#editorTransformed');
 
-        // editorRow.addEventListener('keyup', (evt) => {
-        //   evt.preventDefault();
-        //   const data = editorRow.value;
-        // })
+        editorRow.addEventListener('keyup', (evt) => {
+          evt.preventDefault();
+          const data = editorRow.value;
+        })
         
         editorTransformed.addEventListener('change', (evt) => {
           evt.preventDefault();

@@ -16433,21 +16433,35 @@
       extensions: basicSetup
     });
 
-    let views = [];
 
-    Annotation.define();
 
-    views.push(
+    let syncAnnotation = Annotation.define();
+    const {changes, annotations} = transactions;
+    console.log(transaction);
+
+    function syncDispatch(from, to) {
+      console.log(transaction);
+            if (changes.empty && !annotation(syncAnnotation)) {
+              editorTransformed.dispatch({
+                changes,
+                annotations: syncAnnotation.of(true),
+          });
+          console.log(transaction);
+        }
+        return transaction;
+
+    }
+
       new EditorView({
         state: startState,
         parent: document.querySelector('#editorRow'),
-        //dispatch: syncDispatch(0, 1)
-      }),
-      new EditorView({
+        dispatch: syncDispatch()
+      });
+
+      let editorTransformed = new EditorView({
         state: startState,
         parent: document.querySelector('#editorTransformed'),
-        //dispatch: syncDispatch(1, 0)
-      })
-    );
+        dispatch: syncDispatch()
+      });
 
 }());
