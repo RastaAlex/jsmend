@@ -16429,17 +16429,15 @@
         ])
     ];
 
-    let startState = EditorState.create({
+    const startState = EditorState.create({
       extensions: basicSetup
     });
 
-
-
-    let syncAnnotation = Annotation.define();
-    const {changes, annotations} = transactions;
-    console.log(transaction);
+    //const {changes, annotations} = transactions;
+    //console.log(transaction);
 
     function syncDispatch(from, to) {
+      let syncAnnotation = Annotation.define();
       console.log(transaction);
             if (changes.empty && !annotation(syncAnnotation)) {
               editorTransformed.dispatch({
