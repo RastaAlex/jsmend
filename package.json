@@ -2,7 +2,7 @@
   "name": "jsmend",
   "version": "1.0.0",
   "description": "",
-  "main": "./lib/jsmend.js",
+  "main": "./server/server.js",
   "directories": {
     "lib": "lib"
   },
@@ -16,7 +16,7 @@
     "watch:test": "madrun watch:test",
     "watcher": "madrun watcher",
     "build": "madrun build",
-    "start": "node ./lib/jsmend.js"
+    "start": "node ./server/server.js"
   },
   "keywords": [],
   "author": "",

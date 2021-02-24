@@ -3,8 +3,8 @@
 const {run} = require('madrun');
 
 module.exports = {
-    'lint': () => 'putout lib/bigNumbers.js',
-    'start': () => 'node lib/jsmend.js', 
+    'lint': () => 'putout server/server.js',
+    'start': () => 'node server/server.js', 
     'fix:lint': () => run('lint', '--fix'),
     'report': () => 'nyc report --reporter=text-lcov | coveralls',
     'coverage': () => 'nyc npm test',
@@ -12,5 +12,5 @@ module.exports = {
     'watch:coverage': () => run('watcher', 'npm run coverage'),
     'watch:test': () => run('watcher', 'npm test'),
     'watcher': () => 'nodemon -w test -w --exec',
-    'build': () => 'rollup lib/editor.js -f iife -o dist/editor.bundle.js -p @rollup/plugin-node-resolve'
+    'build': () => 'rollup server/editor.js -f iife -o dist/editor.bundle.js -p @rollup/plugin-node-resolve'
 };
