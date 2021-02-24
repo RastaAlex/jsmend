@@ -1,0 +1,1 @@
+{    "rules": {        "remove-unused-variables": "off",        "remove-console": "off",        "convert-esm-to-commonjs": "on"    }}

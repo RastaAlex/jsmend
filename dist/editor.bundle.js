@@ -1131,8 +1131,8 @@
         }
         /// Map this range through a change, producing a valid range in the
         /// updated document.
-        map(change) {
-            let from = change.mapPos(this.from), to = change.mapPos(this.to);
+        map(change, assoc = -1) {
+            let from = change.mapPos(this.from, assoc), to = change.mapPos(this.to, assoc);
             return from == this.from && to == this.to ? this : new SelectionRange(from, to, this.flags);
         }
         /// Extend this range to cover at least `from` to `to`.
@@ -1171,10 +1171,10 @@
         }
         /// Map a selection through a change. Used to adjust the selection
         /// position for changes.
-        map(change) {
+        map(change, assoc = -1) {
             if (change.empty)
                 return this;
-            return EditorSelection.create(this.ranges.map(r => r.map(change)), this.mainIndex);
+            return EditorSelection.create(this.ranges.map(r => r.map(change, assoc)), this.mainIndex);
         }
         /// Compare this selection to another selection.
         eq(other) {
@@ -3419,6 +3419,7 @@
     function maxOffset(node) {
         return node.nodeType == 3 ? node.nodeValue.length : node.childNodes.length;
     }
+    const Rect0 = { left: 0, right: 0, top: 0, bottom: 0 };
     function flattenRect(rect, left) {
         let x = left ? rect.left : rect.right;
         return { left: x, right: x, top: rect.top, bottom: rect.bottom };
@@ -3887,7 +3888,10 @@
         let range = tempRange();
         range.setEnd(text, to);
         range.setStart(text, from);
-        let rects = range.getClientRects(), rect = rects[(flatten ? flatten < 0 : side >= 0) ? 0 : rects.length - 1];
+        let rects = range.getClientRects();
+        if (!rects.length)
+            return Rect0;
+        let rect = rects[(flatten ? flatten < 0 : side >= 0) ? 0 : rects.length - 1];
         if (browser.safari && !flatten && rect.width == 0)
             rect = Array.prototype.find.call(rects, r => r.width) || rect;
         return flatten ? flattenRect(rect, flatten < 0) : rect;
@@ -3946,6 +3950,8 @@
         domBoundsAround() { return null; }
         coordsAt(pos, side) {
             let rects = this.dom.getClientRects(), rect = null;
+            if (!rects.length)
+                return Rect0;
             for (let i = pos > 0 ? rects.length - 1 : 0;; i += (pos > 0 ? -1 : 1)) {
                 rect = rects[i];
                 if (pos > 0 ? i == 0 : i == rects.length - 1 || rect.top < rect.bottom)
@@ -6345,11 +6351,16 @@
         let byLine = text.lines == state.selection.ranges.length;
         let linewise = lastLinewiseCopy && state.selection.ranges.every(r => r.empty) && lastLinewiseCopy == text.toString();
         if (linewise) {
-            changes = {
-                changes: state.selection.ranges.map(r => state.doc.lineAt(r.from))
-                    .filter((l, i, a) => i == 0 || a[i - 1] != l)
-                    .map(line => ({ from: line.from, insert: (byLine ? text.line(i++).text : input) + state.lineBreak }))
-            };
+            let lastLine = -1;
+            changes = state.changeByRange(range => {
+                let line = state.doc.lineAt(range.from);
+                if (line.from == lastLine)
+                    return { range };
+                lastLine = line.from;
+                let insert = state.toText((byLine ? text.line(i++).text : input) + state.lineBreak);
+                return { changes: { from: line.from, insert },
+                    range: EditorSelection.cursor(range.from + insert.length) };
+            });
         }
         else if (byLine) {
             changes = state.changeByRange(range => {
@@ -7769,23 +7780,7 @@
                         oldValue: event.prevValue });
                     this.flushSoon();
                 };
-            this.onSelectionChange = (event) => {
-                if (this.view.root.activeElement != this.dom)
-                    return;
-                let sel = getSelection(this.view.root);
-                let context = sel.anchorNode && this.view.docView.nearest(sel.anchorNode);
-                if (context && context.ignoreEvent(event))
-                    return;
-                // Deletions on IE11 fire their events in the wrong order, giving
-                // us a selection change event before the DOM changes are
-                // reported.
-                // (Selection.isCollapsed isn't reliable on IE)
-                if (browser.ie && browser.ie_version <= 11 && !this.view.state.selection.main.empty &&
-                    sel.focusNode && isEquivalentPosition(sel.focusNode, sel.focusOffset, sel.anchorNode, sel.anchorOffset))
-                    this.flushSoon();
-                else
-                    this.flush();
-            };
+            this.onSelectionChange = this.onSelectionChange.bind(this);
             this.start();
             this.onScroll = this.onScroll.bind(this);
             window.addEventListener("scroll", this.onScroll);
@@ -7807,6 +7802,23 @@
                 this.flush();
                 this.onScrollChanged(e);
             }
+        }
+        onSelectionChange(event) {
+            let { view } = this, sel = getSelection(view.root);
+            if (view.state.facet(editable) ? view.root.activeElement != this.dom : !hasSelection(view.dom, sel))
+                return;
+            let context = sel.anchorNode && view.docView.nearest(sel.anchorNode);
+            if (context && context.ignoreEvent(event))
+                return;
+            // Deletions on IE11 fire their events in the wrong order, giving
+            // us a selection change event before the DOM changes are
+            // reported.
+            // (Selection.isCollapsed isn't reliable on IE)
+            if (browser.ie && browser.ie_version <= 11 && !view.state.selection.main.empty &&
+                sel.focusNode && isEquivalentPosition(sel.focusNode, sel.focusOffset, sel.anchorNode, sel.anchorOffset))
+                this.flushSoon();
+            else
+                this.flush();
         }
         listenForScroll() {
             this.parentCheck = -1;
@@ -7985,7 +7997,7 @@
                 change = { from: from + diff.from, to: from + diff.toA,
                     insert: view.state.toText(reader.text.slice(diff.from, diff.toB)) };
         }
-        else if (view.hasFocus) {
+        else if (view.hasFocus || !view.state.facet(editable)) {
             let domSel = getSelection(view.root);
             let { impreciseHead: iHead, impreciseAnchor: iAnchor } = view.docView;
             let head = iHead && iHead.node == domSel.focusNode && iHead.offset == domSel.focusOffset ? view.state.selection.main.head
@@ -8211,6 +8223,7 @@
             this.measureRequests = [];
             this.contentDOM = document.createElement("div");
             this.scrollDOM = document.createElement("div");
+            this.scrollDOM.tabIndex = -1;
             this.scrollDOM.className = themeClass("scroller");
             this.scrollDOM.appendChild(this.contentDOM);
             this.announceDOM = document.createElement("div");
@@ -8712,13 +8725,13 @@
         /// names. So for example `$content` targets the editor's [content
         /// element](#view.EditorView.contentDOM).
         ///
-        /// Because the selectors will be prefixed with a scope class,
-        /// directly matching the editor's [wrapper
-        /// element](#view.EditorView.dom), which is the element on which
-        /// the scope class will be added, needs to be explicitly
-        /// differentiated by adding an additional `$` to the front of the
-        /// pattern. For example `$$focused $panel` will expand to something
-        /// like `.[scope].cm-focused .cm-panel`.
+        /// Because the selectors will be prefixed with a scope class, rule
+        /// that directly match the editor's [wrapper
+        /// element](#view.EditorView.dom)—to which the scope
+        /// class will be added—need to be explicitly differentiated by
+        /// adding an additional `$` to the front of the pattern. For
+        /// example `$$focused $panel` will expand to something like
+        /// `.[scope].cm-focused .cm-panel`.
         ///
         /// When `dark` is set to true, the theme will be marked as dark,
         /// which will add the `$dark` selector to the wrapper element (as
@@ -8788,7 +8801,7 @@
     EditorView.decorations = decorations;
     /// An extension that enables line wrapping in the editor (by
     /// setting CSS `white-space` to `pre-wrap` in the content).
-    EditorView.lineWrapping = EditorView.theme({ $content: { whiteSpace: "pre-wrap" } });
+    EditorView.lineWrapping = EditorView.theme({ $content: { whiteSpace: "pre-wrap", overflowWrap: "anywhere" } });
     /// Facet that provides additional DOM attributes for the editor's
     /// editable DOM element.
     EditorView.contentAttributes = contentAttributes;
@@ -9145,7 +9158,8 @@
     const selectionClass = themeClass("selectionBackground");
     function getBase(view) {
         let rect = view.scrollDOM.getBoundingClientRect();
-        return { left: rect.left - view.scrollDOM.scrollLeft, top: rect.top - view.scrollDOM.scrollTop };
+        let left = view.textDirection == Direction.LTR ? rect.left : rect.right - view.scrollDOM.clientWidth;
+        return { left: left - view.scrollDOM.scrollLeft, top: rect.top - view.scrollDOM.scrollTop };
     }
     function wrappedLine(view, pos, inside) {
         let range = EditorSelection.cursor(pos);
@@ -9324,7 +9338,7 @@
     }
 
     const UnicodeRegexpSupport = /x/.unicode != null ? "gu" : "g";
-    const Specials = new RegExp("[\u0000-\u0008\u000a-\u001f\u007f-\u009f\u00ad\u061c\u200b-\u200c\u200e\u200f\u2028\u2029\ufeff\ufff9-\ufffc]", UnicodeRegexpSupport);
+    const Specials = new RegExp("[\u0000-\u0008\u000a-\u001f\u007f-\u009f\u00ad\u061c\u200b\u200e\u200f\u2028\u2029\ufeff\ufff9-\ufffc]", UnicodeRegexpSupport);
     const Names = {
         0: "null",
         7: "bell",
@@ -10024,7 +10038,7 @@
         /// Balance the direct children of this tree.
         balance(maxBufferLength = DefaultBufferLength) {
             return this.children.length <= BalanceBranchFactor ? this
-                : balanceRange(this.type, NodeType.none, this.children, this.positions, 0, this.children.length, 0, maxBufferLength, this.length);
+                : balanceRange(this.type, NodeType.none, this.children, this.positions, 0, this.children.length, 0, maxBufferLength, this.length, 0);
         }
         /// Build a tree from a postfix-ordered buffer of node information,
         /// or a cursor over such a buffer.
@@ -10032,6 +10046,14 @@
     }
     /// The empty tree
     Tree.empty = new Tree(NodeType.none, [], [], 0);
+    // For trees that need a context hash attached, we're using this
+    // kludge which assigns an extra property directly after
+    // initialization (creating a single new object shape).
+    function withHash(tree, hash) {
+        if (hash)
+            tree.contextHash = hash;
+        return tree;
+    }
     /// Tree buffers contain (type, start, end, endIndex) quads for each
     /// node. In such a buffer, nodes are stored in prefix order (parents
     /// before children, with the endIndex of the parent indicating which
@@ -10477,12 +10499,18 @@
         let { buffer, nodeSet, topID = 0, maxBufferLength = DefaultBufferLength, reused = [], minRepeatType = nodeSet.types.length } = data;
         let cursor = Array.isArray(buffer) ? new FlatBufferCursor(buffer, buffer.length) : buffer;
         let types = nodeSet.types;
+        let contextHash = 0;
         function takeNode(parentStart, minPos, children, positions, inRepeat) {
             let { id, start, end, size } = cursor;
             let startPos = start - parentStart;
-            if (size < 0) { // Reused node
-                children.push(reused[id]);
-                positions.push(startPos);
+            if (size < 0) {
+                if (size == -1) { // Reused node
+                    children.push(reused[id]);
+                    positions.push(startPos);
+                }
+                else { // Context change
+                    contextHash = id;
+                }
                 cursor.next();
                 return;
             }
@@ -10510,9 +10538,9 @@
                 localChildren.reverse();
                 localPositions.reverse();
                 if (localInRepeat > -1 && localChildren.length > BalanceBranchFactor)
-                    node = balanceRange(type, type, localChildren, localPositions, 0, localChildren.length, 0, maxBufferLength, end - start);
+                    node = balanceRange(type, type, localChildren, localPositions, 0, localChildren.length, 0, maxBufferLength, end - start, contextHash);
                 else
-                    node = new Tree(type, localChildren, localPositions, end - start);
+                    node = withHash(new Tree(type, localChildren, localPositions, end - start), contextHash);
             }
             children.push(node);
             positions.push(startPos);
@@ -10589,7 +10617,7 @@
         let length = (_a = data.length) !== null && _a !== void 0 ? _a : (children.length ? positions[0] + children[0].length : 0);
         return new Tree(types[topID], children.reverse(), positions.reverse(), length);
     }
-    function balanceRange(outerType, innerType, children, positions, from, to, start, maxBufferLength, length) {
+    function balanceRange(outerType, innerType, children, positions, from, to, start, maxBufferLength, length, contextHash) {
         let localChildren = [], localPositions = [];
         if (length <= maxBufferLength) {
             for (let i = from; i < to; i++) {
@@ -10622,15 +10650,15 @@
                     localChildren.push(children[groupFrom]);
                 }
                 else {
-                    let inner = balanceRange(innerType, innerType, children, positions, groupFrom, i, groupStart, maxBufferLength, positions[i - 1] + children[i - 1].length - groupStart);
+                    let inner = balanceRange(innerType, innerType, children, positions, groupFrom, i, groupStart, maxBufferLength, positions[i - 1] + children[i - 1].length - groupStart, contextHash);
                     if (innerType != NodeType.none && !containsType(inner.children, innerType))
-                        inner = new Tree(NodeType.none, inner.children, inner.positions, inner.length);
+                        inner = withHash(new Tree(NodeType.none, inner.children, inner.positions, inner.length), contextHash);
                     localChildren.push(inner);
                 }
                 localPositions.push(groupStart - start);
             }
         }
-        return new Tree(outerType, localChildren, localPositions, length);
+        return withHash(new Tree(outerType, localChildren, localPositions, length), contextHash);
     }
     function containsType(nodes, type) {
         for (let elt of nodes)
@@ -12482,7 +12510,7 @@
         let lineEnd = view.visualLineAt(pos).to;
         if (pos < lineEnd)
             return lineEnd;
-        return Math.max(view.state.doc.length, pos + 1);
+        return Math.min(view.state.doc.length, pos + 1);
     });
     /// Replace each selection range with a line break, leaving the cursor
     /// on the line before the break.
@@ -12576,7 +12604,8 @@
         let context = syntaxTree(state).resolve(pos);
         let before = context.childBefore(pos), after = context.childAfter(pos), closedBy;
         if (before && after && before.to <= pos && after.from >= pos &&
-            (closedBy = before.type.prop(NodeProp.closedBy)) && closedBy.indexOf(after.name) > -1)
+            (closedBy = before.type.prop(NodeProp.closedBy)) && closedBy.indexOf(after.name) > -1 &&
+            state.doc.lineAt(before.to).from == state.doc.lineAt(after.from).from)
             return { from: before.to, to: after.from };
         return null;
     }
@@ -15276,68 +15305,54 @@
         }
         return null;
     }
-    function findLineComment(token, lines) {
-        let minCol = 1e9, commented = null, skipped = [];
-        for (let i = 0; i < lines.length; i++) {
-            let line = lines[i], col = /^\s*/.exec(line.text)[0].length;
-            let empty = skipped[line.number] = col == line.length;
-            if (col < minCol && (!empty || minCol == 1e9 && i == lines.length - 1))
-                minCol = col;
-            if (commented != false && (!empty || commented == null && i == lines.length - 1))
-                commented = line.text.slice(col, col + token.length) == token;
-        }
-        return { minCol, commented: commented, skipped };
-    }
     // Performs toggle, comment and uncomment of line comments.
     function changeLineComment(option, ranges, state) {
-        let lines = [], tokens = [], lineRanges = [];
+        let lines = [];
+        let prevLine = -1;
         for (let { from, to } of ranges) {
-            let token = getConfig(state, from).line;
-            if (!token)
-                return null;
-            tokens.push(token);
-            let lns = getLinesInRange(state.doc, from, to);
-            lines.push(lns);
-            lineRanges.push(findLineComment(token, lns));
+            let startI = lines.length, minIndent = 1e9;
+            for (let pos = from; pos <= to;) {
+                let line = state.doc.lineAt(pos);
+                if (line.from > prevLine) {
+                    prevLine = line.from;
+                    let token = getConfig(state, pos).line;
+                    if (!token)
+                        continue;
+                    let indent = /^\s*/.exec(line.text)[0].length;
+                    let comment = line.text.slice(indent, indent + token.length) == token ? indent : -1;
+                    if (indent < line.text.length && indent < minIndent)
+                        minIndent = indent;
+                    lines.push({ line, comment, token, indent, single: false });
+                }
+                pos = line.to + 1;
+            }
+            if (minIndent < 1e9)
+                for (let i = startI; i < lines.length; i++)
+                    if (lines[i].indent < lines[i].line.text.length)
+                        lines[i].indent = minIndent;
+            if (lines.length == startI + 1)
+                lines[startI].single = true;
         }
-        if (option != 2 /* Uncomment */ && lineRanges.some(c => !c.commented)) {
+        if (option != 1 /* Comment */ && lines.some(l => l.comment >= 0)) {
             let changes = [];
-            for (let i = 0, lineRange; i < ranges.length; i++)
-                if (!(lineRange = lineRanges[i]).commented) {
-                    for (let line of lines[i]) {
-                        if (!lineRange.skipped[line.number] || lines[i].length == 1)
-                            changes.push({ from: line.from + lineRange.minCol, insert: tokens[i] + " " });
-                    }
+            for (let { line, comment, token } of lines)
+                if (comment >= 0) {
+                    let from = line.from + comment, to = from + token.length;
+                    if (line.text[to - line.from] == " ")
+                        to++;
+                    changes.push({ from, to });
                 }
             return { changes };
         }
-        else if (option != 1 /* Comment */ && lineRanges.some(c => c.commented)) {
+        else if (option != 2 /* Uncomment */ && lines.some(l => l.comment < 0)) {
             let changes = [];
-            for (let i = 0, lineRange; i < ranges.length; i++)
-                if ((lineRange = lineRanges[i]).commented) {
-                    let token = tokens[i];
-                    for (let line of lines[i]) {
-                        if (lineRange.skipped[line.number] && lines[i].length > 1)
-                            continue;
-                        let pos = line.from + lineRange.minCol;
-                        let posAfter = lineRange.minCol + token.length;
-                        let marginLen = line.text.slice(posAfter, posAfter + 1) == " " ? 1 : 0;
-                        changes.push({ from: pos, to: pos + token.length + marginLen });
-                    }
-                }
-            return { changes };
+            for (let { line, comment, token, indent, single } of lines)
+                if (comment != indent && (single || /\S/.test(line.text)))
+                    changes.push({ from: line.from + indent, insert: token + " " });
+            let changeSet = state.changes(changes);
+            return { changes: changeSet, selection: state.selection.map(changeSet, 1) };
         }
         return null;
-    }
-    function getLinesInRange(doc, from, to) {
-        let line = doc.lineAt(from), lines = [];
-        while (line.to < to || (line.from <= to && to <= line.to)) {
-            lines.push(line);
-            if (line.number == doc.lines)
-                break;
-            line = doc.line(line.number + 1);
-        }
-        return lines;
     }
 
     // Don't compute precise column positions for line offsets above this
@@ -16429,37 +16444,50 @@
         ])
     ];
 
+    document.querySelector('#form');
+    document.querySelector('#button1');
+    const editorTransformedEl = document.querySelector('#editor-transformed');
+    const editorRowEl = document.querySelector('#editor-raw');
+
     const startState = EditorState.create({
       extensions: basicSetup
     });
 
-    //const {changes, annotations} = transactions;
-    //console.log(transaction);
+    new EditorView({
+      state: startState,
+      parent: editorRowEl,
+      dispatch: syncDispatch()
+    });
+
+    new EditorView({
+      state: startState,
+      parent: editorTransformedEl,
+      dispatch: syncDispatch()
+    });
 
     function syncDispatch(from, to) {
-      let syncAnnotation = Annotation.define();
-      console.log(transaction);
-            if (changes.empty && !annotation(syncAnnotation)) {
-              editorTransformed.dispatch({
-                changes,
-                annotations: syncAnnotation.of(true),
-          });
-          console.log(transaction);
-        }
-        return transaction;
+      Annotation.define();
+        //     if (changes.empty && !annotation(syncAnnotation)) {
+        //       editorTransformed.dispatch({
+        //         changes,
+        //         annotations: syncAnnotation.of(true),
+        //   })
+        // }
 
     }
 
-      new EditorView({
-        state: startState,
-        parent: document.querySelector('#editorRow'),
-        dispatch: syncDispatch()
-      });
 
-      let editorTransformed = new EditorView({
-        state: startState,
-        parent: document.querySelector('#editorTransformed'),
-        dispatch: syncDispatch()
-      });
+    // editorRow.addEventListener('keyup', (evt) => {
+    //   evt.preventDefault();
+    //   const data = editorRow.value;
+    // })
+
+    // editorTransformed.addEventListener('change', (evt) => {
+    //   evt.preventDefault();
+    //   if (editorRow.value) {
+    //     editorTransformed.value = editorRow.value;
+    //   }
+      
+    //   })
 
 }());

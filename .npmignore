@@ -3,3 +3,7 @@
 test/test.js 
 .eslintrc.json 
 .nyc_output
+.*
+yarn-error.log
+coverage
+rollup.config.js

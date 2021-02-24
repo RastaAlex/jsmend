@@ -3,3 +3,6 @@ node_modules
 .DS_Store
 .putoutcache
 dist
+*.swp
+yarn-error.log
+coverage
