@@ -1298,7 +1298,7 @@
         }
         /// Define a new facet.
         static define(config = {}) {
-            return new Facet(config.combine || ((a) => a), config.compareInput || ((a, b) => a === b), config.compare || (!config.combine ? sameArray : (a, b) => a === b), !!config.static, config.enables);
+            return new Facet(config.combine || ((a) => a), config.compareInput || ((a, b) => a === b), config.compare || (!config.combine ? sameArray$1 : (a, b) => a === b), !!config.static, config.enables);
         }
         /// Returns an extension that adds the given value for this facet.
         of(value) {
@@ -1330,7 +1330,7 @@
             return this.compute([field], state => get(state.field(field)));
         }
     }
-    function sameArray(a, b) {
+    function sameArray$1(a, b) {
         return a == b || a.length == b.length && a.every((e, i) => e === b[i]);
     }
     class FacetProvider {
@@ -1888,8 +1888,8 @@
             changes: spec.changes instanceof ChangeSet ? spec.changes
                 : ChangeSet.of(spec.changes || [], docSize, state.facet(lineSeparator)),
             selection: sel && (sel instanceof EditorSelection ? sel : EditorSelection.single(sel.anchor, sel.head)),
-            effects: asArray(spec.effects),
-            annotations: asArray(spec.annotations),
+            effects: asArray$1(spec.effects),
+            annotations: asArray$1(spec.annotations),
             scrollIntoView: !!spec.scrollIntoView,
             reconfigure: reconf
         };
@@ -1943,7 +1943,7 @@
             else if (Array.isArray(filtered) && filtered.length == 1 && filtered[0] instanceof Transaction)
                 tr = filtered[0];
             else
-                tr = resolveTransaction(state, asArray(filtered), false);
+                tr = resolveTransaction(state, asArray$1(filtered), false);
         }
         return tr;
     }
@@ -1956,9 +1956,9 @@
         }
         return spec == tr ? tr : new Transaction(state, tr.changes, tr.selection, spec.effects, spec.annotations, spec.reconfigure, spec.scrollIntoView);
     }
-    const none = [];
-    function asArray(value) {
-        return value == null ? none : Array.isArray(value) ? value : [value];
+    const none$5 = [];
+    function asArray$1(value) {
+        return value == null ? none$5 : Array.isArray(value) ? value : [value];
     }
 
     /// The categories produced by a [character
@@ -2102,7 +2102,7 @@
             let sel = this.selection;
             let result1 = f(sel.ranges[0]);
             let changes = this.changes(result1.changes), ranges = [result1.range];
-            let effects = asArray(result1.effects);
+            let effects = asArray$1(result1.effects);
             for (let i = 1; i < sel.ranges.length; i++) {
                 let result = f(sel.ranges[i]);
                 let newChanges = this.changes(result.changes), newMapped = newChanges.map(changes);
@@ -2111,7 +2111,7 @@
                 let mapBy = changes.mapDesc(newChanges, true);
                 ranges.push(result.range.map(mapBy));
                 changes = changes.compose(newMapped);
-                effects = StateEffect.mapEffects(effects, newMapped).concat(StateEffect.mapEffects(asArray(result.effects), mapBy));
+                effects = StateEffect.mapEffects(effects, newMapped).concat(StateEffect.mapEffects(asArray$1(result.effects), mapBy));
             }
             return {
                 changes,
@@ -2370,7 +2370,7 @@
           for (let prop in spec) {
             let value = spec[prop];
             if (/&/.test(prop)) {
-              render(selectors.map(s => extend ? extend(prop, s) : prop.replace(/&/, s)), value, target);
+              render(selectors.map(s => extend ? extend(prop, s) : prop.replace(/&/g, s)), value, target);
             } else if (value && typeof value == "object") {
               if (!isAt) throw new RangeError("The value of a property (" + prop + ") should be a primitive value.")
               render(isAt[1] == "keyframes" ? [prop] : processSelector(prop), value, local);
@@ -3274,12 +3274,12 @@
       229: "Q"
     };
 
-    var chrome = typeof navigator != "undefined" && /Chrome\/(\d+)/.exec(navigator.userAgent);
-    var safari = typeof navigator != "undefined" && /Apple Computer/.test(navigator.vendor);
-    var gecko = typeof navigator != "undefined" && /Gecko\/\d+/.test(navigator.userAgent);
+    var chrome$1 = typeof navigator != "undefined" && /Chrome\/(\d+)/.exec(navigator.userAgent);
+    var safari$1 = typeof navigator != "undefined" && /Apple Computer/.test(navigator.vendor);
+    var gecko$1 = typeof navigator != "undefined" && /Gecko\/\d+/.test(navigator.userAgent);
     var mac = typeof navigator != "undefined" && /Mac/.test(navigator.platform);
-    var ie = typeof navigator != "undefined" && /MSIE \d|Trident\/(?:[7-9]|\d{2,})\..*rv:(\d+)/.exec(navigator.userAgent);
-    var brokenModifierNames = chrome && (mac || +chrome[1] < 57) || gecko && mac;
+    var ie$1 = typeof navigator != "undefined" && /MSIE \d|Trident\/(?:[7-9]|\d{2,})\..*rv:(\d+)/.exec(navigator.userAgent);
+    var brokenModifierNames = chrome$1 && (mac || +chrome$1[1] < 57) || gecko$1 && mac;
 
     // Fill in the digit keys
     for (var i = 0; i < 10; i++) base[48 + i] = base[96 + i] = String(i);
@@ -3300,7 +3300,7 @@
       // Don't trust event.key in Chrome when there are modifiers until
       // they fix https://bugs.chromium.org/p/chromium/issues/detail?id=633838
       var ignoreKey = brokenModifierNames && (event.ctrlKey || event.altKey || event.metaKey) ||
-        (safari || ie) && event.shiftKey && event.key && event.key.length == 1;
+        (safari$1 || ie$1) && event.shiftKey && event.key && event.key.length == 1;
       var name = (!ignoreKey && event.key) ||
         (event.shiftKey ? shift : base)[event.keyCode] ||
         event.key || "Unidentified";
@@ -3321,23 +3321,23 @@
     const ie_edge = /Edge\/(\d+)/.exec(nav.userAgent);
     const ie_upto10 = /MSIE \d/.test(nav.userAgent);
     const ie_11up = /Trident\/(?:[7-9]|\d{2,})\..*rv:(\d+)/.exec(nav.userAgent);
-    const ie$1 = !!(ie_upto10 || ie_11up || ie_edge);
-    const gecko$1 = !ie$1 && /gecko\/(\d+)/i.test(nav.userAgent);
-    const chrome$1 = !ie$1 && /Chrome\/(\d+)/.exec(nav.userAgent);
+    const ie = !!(ie_upto10 || ie_11up || ie_edge);
+    const gecko = !ie && /gecko\/(\d+)/i.test(nav.userAgent);
+    const chrome = !ie && /Chrome\/(\d+)/.exec(nav.userAgent);
     const webkit = "webkitFontSmoothing" in doc.documentElement.style;
-    const safari$1 = !ie$1 && /Apple Computer/.test(nav.vendor);
+    const safari = !ie && /Apple Computer/.test(nav.vendor);
     var browser = {
         mac: /Mac/.test(nav.platform),
-        ie: ie$1,
+        ie,
         ie_version: ie_upto10 ? doc.documentMode || 6 : ie_11up ? +ie_11up[1] : ie_edge ? +ie_edge[1] : 0,
-        gecko: gecko$1,
-        gecko_version: gecko$1 ? +(/Firefox\/(\d+)/.exec(nav.userAgent) || [0, 0])[1] : 0,
-        chrome: !!chrome$1,
-        chrome_version: chrome$1 ? +chrome$1[1] : 0,
-        ios: safari$1 && (/Mobile\/\w+/.test(nav.userAgent) || nav.maxTouchPoints > 2),
+        gecko,
+        gecko_version: gecko ? +(/Firefox\/(\d+)/.exec(nav.userAgent) || [0, 0])[1] : 0,
+        chrome: !!chrome,
+        chrome_version: chrome ? +chrome[1] : 0,
+        ios: safari && (/Mobile\/\w+/.test(nav.userAgent) || nav.maxTouchPoints > 2),
         android: /Android\b/.test(nav.userAgent),
         webkit,
-        safari: safari$1,
+        safari,
         webkit_version: webkit ? +(/\bAppleWebKit\/(\d+)/.exec(navigator.userAgent) || [0, 0])[1] : 0,
         tabSize: doc.documentElement.style.tabSize != null ? "tab-size" : "-moz-tab-size"
     };
@@ -3548,7 +3548,7 @@
         static before(dom, precise) { return new DOMPos(dom.parentNode, domIndex(dom), precise); }
         static after(dom, precise) { return new DOMPos(dom.parentNode, domIndex(dom) + 1, precise); }
     }
-    const none$1 = [];
+    const none$3 = [];
     class ContentView {
         constructor() {
             this.parent = null;
@@ -3603,7 +3603,7 @@
                 if (next && track && track.node == parent)
                     track.written = true;
                 while (next)
-                    next = rm(next);
+                    next = rm$1(next);
             }
             else if (this.dirty & 1 /* Child */) {
                 for (let child of this.children)
@@ -3705,7 +3705,7 @@
                 v = parent;
             }
         }
-        replaceChildren(from, to, children = none$1) {
+        replaceChildren(from, to, children = none$3) {
             this.markDirty();
             for (let i = from; i < to; i++)
                 this.children[i].parent = null;
@@ -3731,7 +3731,7 @@
     }
     ContentView.prototype.breakAfter = 0;
     // Remove a DOM node and return its next sibling.
-    function rm(dom) {
+    function rm$1(dom) {
         let next = dom.nextSibling;
         dom.parentNode.removeChild(dom);
         return next;
@@ -3740,7 +3740,7 @@
         let next = after ? after.nextSibling : parent.firstChild;
         if (dom.parentNode == parent)
             while (next != dom)
-                next = rm(next);
+                next = rm$1(next);
         else
             parent.insertBefore(dom, next);
     }
@@ -3764,7 +3764,7 @@
         }
     }
 
-    const none$1$1 = [];
+    const none$2 = [];
     class InlineView extends ContentView {
         /// Return true when this view is equivalent to `other` and can take
         /// on its role.
@@ -3774,7 +3774,7 @@
         // positive number when after its position.
         getSide() { return 0; }
     }
-    InlineView.prototype.children = none$1$1;
+    InlineView.prototype.children = none$2;
     const MaxJoinLen = 256;
     class TextView extends InlineView {
         constructor(text) {
@@ -3848,7 +3848,7 @@
             if (source && (!(source instanceof MarkView && source.mark.eq(this.mark)) ||
                 (from && openStart <= 0) || (to < this.length && openEnd <= 0)))
                 return false;
-            mergeInlineChildren(this, from, to, source ? source.children : none$1$1, openStart - 1, openEnd - 1);
+            mergeInlineChildren(this, from, to, source ? source.children : none$2, openStart - 1, openEnd - 1);
             this.markDirty();
             return true;
         }
@@ -4365,8 +4365,8 @@
             extend(template, sel) {
                 template = expandThemeClasses(template);
                 return sel.slice(0, main.length + 1) == main + " "
-                    ? main + " " + template.replace(/&/, sel.slice(main.length + 1))
-                    : template.replace(/&/, sel);
+                    ? main + " " + template.replace(/&/g, sel.slice(main.length + 1))
+                    : template.replace(/&/g, sel);
             }
         });
     }
@@ -4387,7 +4387,7 @@
             result += (result ? " " : "") + "cm-" + parts.slice(0, i).join("-");
         return result;
     }
-    const baseTheme = buildTheme("." + baseThemeID, {
+    const baseTheme$8 = buildTheme("." + baseThemeID, {
         $: {
             position: "relative !important",
             boxSizing: "border-box",
@@ -4542,7 +4542,7 @@
             }
             if (takeDeco)
                 this.setDeco(source ? source.attrs : null);
-            mergeInlineChildren(this, from, to, source ? source.children : none$2, openStart, openEnd);
+            mergeInlineChildren(this, from, to, source ? source.children : none$1$1, openStart, openEnd);
             return true;
         }
         split(at) {
@@ -4648,7 +4648,7 @@
             }
         }
     }
-    const none$2 = [];
+    const none$1$1 = [];
     class BlockWidgetView extends ContentView {
         constructor(widget, length, type) {
             super();
@@ -4672,7 +4672,7 @@
             this.length = at;
             return new BlockWidgetView(this.widget, len, this.type);
         }
-        get children() { return none$2; }
+        get children() { return none$1$1; }
         sync() {
             if (!this.dom || !this.widget.updateDOM(this.dom)) {
                 this.setDOM(this.widget.toDOM(this.editorView));
@@ -4825,9 +4825,9 @@
         updateDOM(elt) { return elt.nodeName.toLowerCase() == this.tag; }
     }
 
-    const none$3 = [];
+    const none$4 = [];
     const clickAddsSelectionRange = Facet.define();
-    const dragMovesSelection = Facet.define();
+    const dragMovesSelection$1 = Facet.define();
     const mouseSelectionStyle = Facet.define();
     const exceptionSink = Facet.define();
     const updateListener = Facet.define();
@@ -5065,7 +5065,7 @@
         /// The new editor state.
         state, 
         /// The transactions involved in the update. May be empty.
-        transactions = none$3) {
+        transactions = none$4) {
             this.view = view;
             this.state = state;
             this.transactions = transactions;
@@ -5291,7 +5291,13 @@
             let main = this.view.state.selection.main;
             // FIXME need to handle the case where the selection falls inside a block range
             let anchor = this.domAtPos(main.anchor);
-            let head = this.domAtPos(main.head);
+            let head = main.empty ? anchor : this.domAtPos(main.head);
+            if (browser.gecko && main.empty && betweenUneditable(anchor)) {
+                let dummy = document.createTextNode("");
+                this.view.observer.ignore(() => anchor.node.insertBefore(dummy, anchor.node.childNodes[anchor.offset] || null));
+                anchor = head = new DOMPos(dummy, 0);
+                force = true;
+            }
             let domSel = getSelection(this.root);
             // If the selection is already here, or in an equivalent position, don't touch it
             if (force || !domSel.focusNode ||
@@ -5487,6 +5493,11 @@
             });
         }
     }
+    function betweenUneditable(pos) {
+        return pos.node.nodeType == 1 && pos.node.firstChild &&
+            (pos.offset == 0 || pos.node.childNodes[pos.offset - 1].contentEditable == "false") &&
+            (pos.offset < pos.node.childNodes.length || pos.node.childNodes[pos.offset].contentEditable == "false");
+    }
     class BlockGapWidget extends WidgetType {
         constructor(height) {
             super();
@@ -5578,7 +5589,7 @@
         return (offset && node.childNodes[offset - 1].contentEditable == "false" ? 1 /* Before */ : 0) |
             (offset < node.childNodes.length && node.childNodes[offset].contentEditable == "false" ? 2 /* After */ : 0);
     }
-    class DecorationComparator {
+    class DecorationComparator$1 {
         constructor() {
             this.changes = [];
         }
@@ -5586,7 +5597,7 @@
         comparePoint(from, to) { addRange(from, to, this.changes); }
     }
     function findChangedDeco(a, b, diff) {
-        let comp = new DecorationComparator;
+        let comp = new DecorationComparator$1;
         RangeSet.compare(a, b, diff, comp);
         return comp.changes;
     }
@@ -6061,7 +6072,7 @@
             let rect = view.dom.getBoundingClientRect();
             let goal = (_a = start.goalColumn) !== null && _a !== void 0 ? _a : startCoords.left - rect.left;
             let resolvedGoal = rect.left + goal;
-            let dist = distance !== null && distance !== void 0 ? distance : 5;
+            let dist = distance !== null && distance !== void 0 ? distance : (view.defaultLineHeight >> 1);
             for (let startY = dir < 0 ? startCoords.top : startCoords.bottom, extra = 0; extra < 50; extra += 10) {
                 let pos = posAtCoords(view, { x: resolvedGoal, y: startY + (dist + extra) * dir }, dir);
                 if (pos == null)
@@ -6247,7 +6258,7 @@
             doc.addEventListener("mouseup", this.up = this.up.bind(this));
             this.extend = startEvent.shiftKey;
             this.multiple = view.state.facet(EditorState.allowMultipleSelections) && addsSelectionRange(view, startEvent);
-            this.dragMove = dragMovesSelection$1(view, startEvent);
+            this.dragMove = dragMovesSelection(view, startEvent);
             this.dragging = isInPrimarySelection(view, startEvent) ? null : false;
             // When clicking outside of the selection, immediately apply the
             // effect of starting the selection
@@ -6295,8 +6306,8 @@
         let facet = view.state.facet(clickAddsSelectionRange);
         return facet.length ? facet[0](event) : browser.mac ? event.metaKey : event.ctrlKey;
     }
-    function dragMovesSelection$1(view, event) {
-        let facet = view.state.facet(dragMovesSelection);
+    function dragMovesSelection(view, event) {
+        let facet = view.state.facet(dragMovesSelection$1);
         return facet.length ? facet[0](event) : browser.mac ? !event.altKey : !event.ctrlKey;
     }
     function isInPrimarySelection(view, event) {
@@ -6392,10 +6403,22 @@
             event.preventDefault();
         view.inputState.setSelectionOrigin("keyboardselection");
     };
-    handlers.touchdown = handlers.touchmove = view => {
+    let lastTouch = 0;
+    function mouseLikeTouchEvent(e) {
+        return e.touches.length == 1 && e.touches[0].radiusX <= 1 && e.touches[0].radiusY <= 1;
+    }
+    handlers.touchstart = (view, e) => {
+        if (!mouseLikeTouchEvent(e))
+            lastTouch = Date.now();
+        view.inputState.setSelectionOrigin("pointerselection");
+    };
+    handlers.touchmove = view => {
         view.inputState.setSelectionOrigin("pointerselection");
     };
     handlers.mousedown = (view, event) => {
+        view.observer.flush();
+        if (lastTouch > Date.now() - 50)
+            return; // Ignore touch interaction
         let style = null;
         for (let makeStyle of view.state.facet(mouseSelectionStyle)) {
             style = makeStyle(view, event);
@@ -7251,11 +7274,11 @@
         }
     }
     function heightRelevantDecoChanges(a, b, diff) {
-        let comp = new DecorationComparator$1;
+        let comp = new DecorationComparator;
         RangeSet.compare(a, b, diff, comp, 0);
         return comp.changes;
     }
-    class DecorationComparator$1 {
+    class DecorationComparator {
         constructor() {
             this.changes = [];
         }
@@ -8034,7 +8057,8 @@
             if (view.inputState.composing >= 0)
                 view.inputState.composing++;
             let tr;
-            if (change.from >= sel.from && change.to <= sel.to && change.to - change.from >= (sel.to - sel.from) / 3) {
+            if (change.from >= sel.from && change.to <= sel.to && change.to - change.from >= (sel.to - sel.from) / 3 &&
+                (!newSel || newSel.main.empty && newSel.main.from == change.from + change.insert.length)) {
                 let before = sel.from < change.from ? startState.sliceDoc(sel.from, change.from) : "";
                 let after = sel.to > change.to ? startState.sliceDoc(change.to, sel.to) : "";
                 tr = startState.replaceSelection(view.state.toText(before + change.insert.sliceString(0, undefined, view.state.lineBreak) +
@@ -8288,15 +8312,18 @@
             if (this.updateState != 0 /* Idle */)
                 throw new Error("Calls to EditorView.update are not allowed while an update is in progress");
             let redrawn = false, update;
-            this.updateState = 2 /* Updating */;
+            let state = this.state;
+            for (let tr of transactions) {
+                if (tr.startState != state)
+                    throw new RangeError("Trying to update state with a transaction that doesn't start from the previous state.");
+                state = tr.state;
+            }
+            // When the phrases change, redraw the editor
+            if (state.facet(EditorState.phrases) != this.state.facet(EditorState.phrases))
+                return this.setState(state);
+            update = new ViewUpdate(this, state, transactions);
             try {
-                let state = this.state;
-                for (let tr of transactions) {
-                    if (tr.startState != state)
-                        throw new RangeError("Trying to update state with a transaction that doesn't start from the previous state.");
-                    state = tr.state;
-                }
-                update = new ViewUpdate(this, state, transactions);
+                this.updateState = 2 /* Updating */;
                 let scrollTo = transactions.some(tr => tr.scrollIntoView) ? state.selection.main : null;
                 this.viewState.update(update, scrollTo);
                 this.bidiCache = CachedOrder.update(this.bidiCache, update.changes);
@@ -8471,7 +8498,7 @@
         }
         mountStyles() {
             this.styleModules = this.state.facet(styleModule);
-            StyleModule.mount(this.root, this.styleModules.concat(baseTheme).reverse());
+            StyleModule.mount(this.root, this.styleModules.concat(baseTheme$8).reverse());
         }
         readMeasured() {
             if (this.updateState == 2 /* Updating */)
@@ -8790,7 +8817,7 @@
     /// should move or copy the selection. The given predicate will be
     /// called with the `mousedown` event, and can return `true` when
     /// the drag should move the content.
-    EditorView.dragMovesSelection = dragMovesSelection;
+    EditorView.dragMovesSelection = dragMovesSelection$1;
     /// Facet used to configure whether a given selecting click adds
     /// a new range to the existing selection or replaces it entirely.
     EditorView.clickAddsSelectionRange = clickAddsSelectionRange;
@@ -9182,11 +9209,11 @@
             visualEnd = wrappedLine(view, to, visualEnd);
         }
         if (visualStart.from == visualEnd.from) {
-            return pieces(drawForLine(range.from, range.to));
+            return pieces(drawForLine(range.from, range.to, visualStart));
         }
         else {
-            let top = drawForLine(range.from, null);
-            let bottom = drawForLine(null, range.to);
+            let top = drawForLine(range.from, null, visualStart);
+            let bottom = drawForLine(null, range.to, visualEnd);
             let between = [];
             if (visualStart.to < visualEnd.from - 1)
                 between.push(piece(leftSide, top.bottom, rightSide, bottom.top));
@@ -9204,10 +9231,11 @@
             return pieces;
         }
         // Gets passed from/to in line-local positions
-        function drawForLine(from, to) {
+        function drawForLine(from, to, line) {
             let top = 1e9, bottom = -1e9, horizontal = [];
             function addSpan(from, fromOpen, to, toOpen, dir) {
-                let fromCoords = view.coordsAtPos(from, 1), toCoords = view.coordsAtPos(to, -1);
+                let fromCoords = view.coordsAtPos(from, from == line.to ? -1 : 1);
+                let toCoords = view.coordsAtPos(to, to == line.from ? 1 : -1);
                 top = Math.min(fromCoords.top, toCoords.top, top);
                 bottom = Math.max(fromCoords.bottom, toCoords.bottom, bottom);
                 if (dir == Direction.LTR)
@@ -9215,8 +9243,7 @@
                 else
                     horizontal.push(!ltr && toOpen ? leftSide : toCoords.left, !ltr && fromOpen ? rightSide : fromCoords.right);
             }
-            let start = from !== null && from !== void 0 ? from : view.moveToLineBoundary(EditorSelection.cursor(to, 1), false).head;
-            let end = to !== null && to !== void 0 ? to : view.moveToLineBoundary(EditorSelection.cursor(from, -1), true).head;
+            let start = from !== null && from !== void 0 ? from : line.from, end = to !== null && to !== void 0 ? to : line.to;
             // Split the range by visible range and document line
             for (let r of view.visibleRanges)
                 if (r.to > start && r.from < end) {
@@ -9430,7 +9457,7 @@
     const DefaultPlaceholder = "\u2022";
     // Assigns placeholder characters from the Control Pictures block to
     // ASCII control characters
-    function placeholder(code) {
+    function placeholder$1(code) {
         if (code >= 32)
             return DefaultPlaceholder;
         if (code == 10)
@@ -9445,7 +9472,7 @@
         }
         eq(other) { return other.code == this.code; }
         toDOM(view) {
-            let ph = placeholder(this.code);
+            let ph = placeholder$1(this.code);
             let desc = view.state.phrase("Control character ") + (Names[this.code] || "0x" + this.code.toString(16));
             let custom = this.options.render && this.options.render(this.code, desc, ph);
             if (custom)
@@ -9627,7 +9654,7 @@
         // transaction needs to be converted to an item. Returns null when
         // there are no changes or effects in the transaction.
         static fromTransaction(tr) {
-            let effects = none$4;
+            let effects = none$1;
             for (let invert of tr.startState.facet(invertedEffects)) {
                 let result = invert(tr);
                 if (result.length)
@@ -9635,10 +9662,10 @@
             }
             if (!effects.length && tr.changes.empty)
                 return null;
-            return new HistEvent(tr.changes.invert(tr.startState.doc), effects, undefined, tr.startState.selection, none$4);
+            return new HistEvent(tr.changes.invert(tr.startState.doc), effects, undefined, tr.startState.selection, none$1);
         }
         static selection(selections) {
-            return new HistEvent(undefined, none$4, undefined, undefined, selections);
+            return new HistEvent(undefined, none$1, undefined, undefined, selections);
         }
     }
     function updateBranch(branch, to, maxLen, newEvent) {
@@ -9666,7 +9693,7 @@
     function conc(a, b) {
         return !a.length ? b : !b.length ? a : a.concat(b);
     }
-    const none$4 = [];
+    const none$1 = [];
     const MaxSelectionsPerEvent = 200;
     function addSelection(branch, selection) {
         if (!branch.length) {
@@ -9694,7 +9721,7 @@
     function addMappingToBranch(branch, mapping) {
         if (!branch.length)
             return branch;
-        let length = branch.length, selections = none$4;
+        let length = branch.length, selections = none$1;
         while (length) {
             let event = mapEvent(branch[length - 1], mapping, selections);
             if (event.changes && !event.changes.empty || event.effects.length) { // Event survived mapping
@@ -9708,10 +9735,10 @@
                 selections = event.selectionsAfter;
             }
         }
-        return selections.length ? [HistEvent.selection(selections)] : none$4;
+        return selections.length ? [HistEvent.selection(selections)] : none$1;
     }
     function mapEvent(event, mapping, extraSelections) {
-        let selections = conc(event.selectionsAfter.length ? event.selectionsAfter.map(s => s.map(mapping)) : none$4, extraSelections);
+        let selections = conc(event.selectionsAfter.length ? event.selectionsAfter.map(s => s.map(mapping)) : none$1, extraSelections);
         // Change-less events don't store mappings (they are always the last event in a branch)
         if (!event.changes)
             return HistEvent.selection(selections);
@@ -9736,15 +9763,15 @@
                 !lastEvent.selectionsAfter.length &&
                 !lastEvent.changes.empty && event.changes &&
                 isAdjacent(lastEvent.changes, event.changes)) {
-                done = updateBranch(done, done.length - 1, maxLen, new HistEvent(event.changes.compose(lastEvent.changes), conc(event.effects, lastEvent.effects), lastEvent.mapped, lastEvent.startSelection, none$4));
+                done = updateBranch(done, done.length - 1, maxLen, new HistEvent(event.changes.compose(lastEvent.changes), conc(event.effects, lastEvent.effects), lastEvent.mapped, lastEvent.startSelection, none$1));
             }
             else {
                 done = updateBranch(done, done.length, maxLen, event);
             }
-            return new HistoryState(done, none$4, time, userEvent);
+            return new HistoryState(done, none$1, time, userEvent);
         }
         addSelection(selection, time, userEvent, newGroupDelay) {
-            let last = this.done.length ? this.done[this.done.length - 1].selectionsAfter : none$4;
+            let last = this.done.length ? this.done[this.done.length - 1].selectionsAfter : none$1;
             if (last.length > 0 &&
                 time - this.prevTime < newGroupDelay &&
                 userEvent == "keyboardselection" && this.prevUserEvent == userEvent &&
@@ -9770,7 +9797,7 @@
                 return null;
             }
             else {
-                let rest = branch.length == 1 ? none$4 : branch.slice(0, branch.length - 1);
+                let rest = branch.length == 1 ? none$1 : branch.slice(0, branch.length - 1);
                 if (event.mapped)
                     rest = addMappingToBranch(rest, event.mapped);
                 return state.update({
@@ -9783,7 +9810,7 @@
             }
         }
     }
-    HistoryState.empty = new HistoryState(none$4, none$4);
+    HistoryState.empty = new HistoryState(none$1, none$1);
     /// Default key bindings for the undo history.
     ///
     /// - Mod-z: [`undo`](#history.undo).
@@ -11463,7 +11490,7 @@
     }
     GutterMarker.prototype.elementClass = "";
     GutterMarker.prototype.mapMode = MapMode.TrackBefore;
-    const defaults = {
+    const defaults$1 = {
         style: "",
         renderEmptyElements: false,
         elementStyle: "",
@@ -11477,9 +11504,9 @@
     /// Define an editor gutter. The order in which the gutters appear is
     /// determined by their extension priority.
     function gutter(config) {
-        return [gutters(), activeGutters.of(Object.assign(Object.assign({}, defaults), config))];
+        return [gutters(), activeGutters.of(Object.assign(Object.assign({}, defaults$1), config))];
     }
-    const baseTheme$1 = EditorView.baseTheme({
+    const baseTheme$7 = EditorView.baseTheme({
         $gutters: {
             display: "flex",
             height: "100%",
@@ -11527,7 +11554,7 @@
     function gutters(config) {
         let result = [
             gutterView,
-            baseTheme$1
+            baseTheme$7
         ];
         if (config && config.fixed === false)
             result.push(unfixGutters.of(true));
@@ -11619,7 +11646,7 @@
             return value.view.textDirection == Direction.LTR ? { left: value.dom.offsetWidth } : { right: value.dom.offsetWidth };
         })
     });
-    function asArray$1(val) { return (Array.isArray(val) ? val : [val]); }
+    function asArray(val) { return (Array.isArray(val) ? val : [val]); }
     class UpdateContext {
         constructor(gutter, viewport) {
             this.gutter = gutter;
@@ -11681,7 +11708,7 @@
                         event.preventDefault();
                 });
             }
-            this.markers = asArray$1(config.markers(view));
+            this.markers = asArray(config.markers(view));
             if (config.initialSpacer) {
                 this.spacer = new GutterElement(view, 0, 0, [config.initialSpacer(view)], this.elementClass);
                 this.dom.appendChild(this.spacer.dom);
@@ -11690,7 +11717,7 @@
         }
         update(update) {
             let prevMarkers = this.markers;
-            this.markers = asArray$1(this.config.markers(update.view));
+            this.markers = asArray(this.config.markers(update.view));
             if (this.spacer && this.config.updateSpacer) {
                 let updated = this.config.updateSpacer(this.spacer.markers[0], update);
                 if (updated != this.spacer.markers[0])
@@ -11928,7 +11955,7 @@
     });
     /// Create an extension that configures code folding.
     function codeFolding(config) {
-        let result = [foldState, baseTheme$2];
+        let result = [foldState, baseTheme$6];
         if (config)
             result.push(foldConfig.of(config));
         return result;
@@ -12041,7 +12068,7 @@
             codeFolding()
         ];
     }
-    const baseTheme$2 = EditorView.baseTheme({
+    const baseTheme$6 = EditorView.baseTheme({
         $foldPlaceholder: {
             backgroundColor: "#eee",
             border: "1px solid #ddd",
@@ -12057,7 +12084,7 @@
         }
     });
 
-    const baseTheme$3 = EditorView.baseTheme({
+    const baseTheme$5 = EditorView.baseTheme({
         $matchingBracket: { color: "#0b0" },
         $nonmatchingBracket: { color: "#a22" }
     });
@@ -12100,7 +12127,7 @@
     });
     const bracketMatchingUnique = [
         bracketMatchingState,
-        baseTheme$3
+        baseTheme$5
     ];
     /// Create an extension that enables bracket matching. Whenever the
     /// cursor is next to a bracket, that bracket and the one it matches
@@ -12427,8 +12454,8 @@
         dispatch(setSel(state, selection));
         return true;
     };
-    function deleteBy(view, by) {
-        let { state } = view, changes = state.changeByRange(range => {
+    function deleteBy({ state, dispatch }, by) {
+        let changes = state.changeByRange(range => {
             let { from, to } = range;
             if (from == to) {
                 let towards = by(from);
@@ -12439,11 +12466,11 @@
         });
         if (changes.changes.empty)
             return false;
-        view.dispatch(changes, { scrollIntoView: true, annotations: Transaction.userEvent.of("delete") });
+        dispatch(state.update(changes, { scrollIntoView: true, annotations: Transaction.userEvent.of("delete") }));
         return true;
     }
-    const deleteByChar = (view, forward, codePoint) => deleteBy(view, pos => {
-        let { state } = view, line = state.doc.lineAt(pos), before;
+    const deleteByChar = (target, forward, codePoint) => deleteBy(target, pos => {
+        let { state } = target, line = state.doc.lineAt(pos), before;
         if (!forward && pos > line.from && pos < line.from + 200 &&
             !/[^ \t]/.test(before = line.text.slice(0, pos - line.from))) {
             if (before[before.length - 1] == "\t")
@@ -12453,18 +12480,18 @@
                 pos--;
             return pos;
         }
-        let target;
+        let targetPos;
         if (codePoint) {
             let next = line.text.slice(pos - line.from + (forward ? 0 : -2), pos - line.from + (forward ? 2 : 0));
             let size = next ? codePointSize(codePointAt(next, 0)) : 1;
-            target = forward ? Math.min(state.doc.length, pos + size) : Math.max(0, pos - size);
+            targetPos = forward ? Math.min(state.doc.length, pos + size) : Math.max(0, pos - size);
         }
         else {
-            target = findClusterBreak(line.text, pos - line.from, forward) + line.from;
+            targetPos = findClusterBreak(line.text, pos - line.from, forward) + line.from;
         }
-        if (target == pos && line.number != (forward ? state.doc.lines : 1))
-            target += forward ? 1 : -1;
-        return target;
+        if (targetPos == pos && line.number != (forward ? state.doc.lines : 1))
+            targetPos += forward ? 1 : -1;
+        return targetPos;
     });
     /// Delete the selection, or, for cursor selections, the code point
     /// before the cursor.
@@ -12474,35 +12501,32 @@
     const deleteCharBackward = view => deleteByChar(view, false, false);
     /// Delete the selection or the character after the cursor.
     const deleteCharForward = view => deleteByChar(view, true, false);
-    const deleteByGroup = (view, forward) => deleteBy(view, pos => {
-        let { state } = view, line = state.doc.lineAt(pos), categorize = state.charCategorizer(pos);
+    const deleteByGroup = (target, forward) => deleteBy(target, start => {
+        let pos = start, { state } = target, line = state.doc.lineAt(pos);
+        let categorize = state.charCategorizer(pos);
         for (let cat = null;;) {
-            let next, nextChar;
             if (pos == (forward ? line.to : line.from)) {
-                if (line.number == (forward ? state.doc.lines : 1))
-                    break;
-                line = state.doc.line(line.number + (forward ? 1 : -1));
-                next = forward ? line.from : line.to;
-                nextChar = "\n";
+                if (pos == start && line.number != (forward ? state.doc.lines : 1))
+                    pos += forward ? 1 : -1;
+                break;
             }
-            else {
-                next = findClusterBreak(line.text, pos - line.from, forward) + line.from;
-                nextChar = line.text.slice(Math.min(pos, next) - line.from, Math.max(pos, next) - line.from);
-            }
+            let next = findClusterBreak(line.text, pos - line.from, forward) + line.from;
+            let nextChar = line.text.slice(Math.min(pos, next) - line.from, Math.max(pos, next) - line.from);
             let nextCat = categorize(nextChar);
             if (cat != null && nextCat != cat)
                 break;
-            if (nextCat != CharCategory.Space)
+            if (nextChar != " " || pos != start)
                 cat = nextCat;
             pos = next;
         }
         return pos;
     });
     /// Delete the selection or backward until the end of the next
-    /// [group](#view.EditorView.moveByGroup).
-    const deleteGroupBackward = view => deleteByGroup(view, false);
+    /// [group](#view.EditorView.moveByGroup), only skipping groups of
+    /// whitespace when they consist of a single space.
+    const deleteGroupBackward = target => deleteByGroup(target, false);
     /// Delete the selection or forward until the end of the next group.
-    const deleteGroupForward = view => deleteByGroup(view, true);
+    const deleteGroupForward = target => deleteByGroup(target, true);
     /// Delete the selection, or, if it is a cursor selection, delete to
     /// the end of the line. If the cursor is directly at the end of the
     /// line, delete the line break after it.
@@ -12641,14 +12665,13 @@
         let atLine = -1;
         return state.changeByRange(range => {
             let changes = [];
-            for (let line = state.doc.lineAt(range.from);;) {
-                if (line.number > atLine) {
+            for (let pos = range.from; pos <= range.to;) {
+                let line = state.doc.lineAt(pos);
+                if (line.number > atLine && (range.empty || range.to > line.from)) {
                     f(line, changes, range);
                     atLine = line.number;
                 }
-                if (range.to <= line.to)
-                    break;
-                line = state.doc.lineAt(line.to + 1);
+                pos = line.to + 1;
             }
             let changeSet = state.changes(changes);
             return { changes,
@@ -12810,7 +12833,7 @@
     /// - Shift-Alt-ArrowUp: [`copyLineUp`](#commands.copyLineUp)
     /// - Shift-Alt-ArrowDown: [`copyLineDown`](#commands.copyLineDown)
     /// - Escape: [`simplifySelection`](#commands.simplifySelection)
-    /// - Ctrl-l (Cmd-l on macOS): [`selectLine`](#commands.selectLine)
+    /// - Alt-l: [`selectLine`](#commands.selectLine)
     /// - Ctrl-i (Cmd-i on macOS): [`selectParentSyntax`](#commands.selectParentSyntax)
     /// - Ctrl-[ (Cmd-[ on macOS): [`indentLess`](#commands.indentLess)
     /// - Ctrl-] (Cmd-] on macOS): [`indentMore`](#commands.indentMore)
@@ -12825,7 +12848,7 @@
         { key: "Alt-ArrowDown", run: moveLineDown },
         { key: "Shift-Alt-ArrowDown", run: copyLineDown },
         { key: "Escape", run: simplifySelection },
-        { key: "Mod-l", run: selectLine },
+        { key: "Alt-l", run: selectLine },
         { key: "Mod-i", run: selectParentSyntax },
         { key: "Mod-[", run: indentLess },
         { key: "Mod-]", run: indentMore },
@@ -12834,7 +12857,7 @@
         { key: "Shift-Mod-\\", run: cursorMatchingBracket }
     ].concat(standardKeymap);
 
-    const defaults$1 = {
+    const defaults = {
         brackets: ["(", "[", "{", "'", '"'],
         before: ")]}'\":;>"
     };
@@ -12886,7 +12909,7 @@
         return fromCodePoint(ch < 128 ? ch : ch + 1);
     }
     function config(state, pos) {
-        return state.languageDataAt("closeBrackets", pos)[0] || defaults$1;
+        return state.languageDataAt("closeBrackets", pos)[0] || defaults;
     }
     function handleInput(view, from, to, insert) {
         if (view.composing)
@@ -12905,7 +12928,7 @@
     /// the cursor is between them.
     const deleteBracketPair = ({ state, dispatch }) => {
         let conf = config(state, state.selection.main.head);
-        let tokens = conf.brackets || defaults$1.brackets;
+        let tokens = conf.brackets || defaults.brackets;
         let dont = null, changes = state.changeByRange(range => {
             if (range.empty) {
                 let before = prevChar(state.doc, range.head);
@@ -12938,12 +12961,12 @@
     /// take care of running this for user input.)
     function insertBracket(state, bracket) {
         let conf = config(state, state.selection.main.head);
-        let tokens = conf.brackets || defaults$1.brackets;
+        let tokens = conf.brackets || defaults.brackets;
         for (let tok of tokens) {
             let closed = closing(codePointAt(tok, 0));
             if (bracket == tok)
                 return closed == tok ? handleSame(state, tok, tokens.indexOf(tok + tok + tok) > -1)
-                    : handleOpen(state, tok, closed, conf.before || defaults$1.before);
+                    : handleOpen(state, tok, closed, conf.before || defaults.before);
             if (bracket == closed && closedBracketAt(state, state.selection.main.from))
                 return handleClose(state, tok, closed);
         }
@@ -13173,7 +13196,7 @@
             for (let panel of this.panels) {
                 if (panel.dom.parentNode == this.dom) {
                     while (curDOM != panel.dom)
-                        curDOM = rm$1(curDOM);
+                        curDOM = rm(curDOM);
                     curDOM = curDOM.nextSibling;
                 }
                 else {
@@ -13181,7 +13204,7 @@
                 }
             }
             while (curDOM)
-                curDOM = rm$1(curDOM);
+                curDOM = rm(curDOM);
         }
         scrollMargin() {
             return !this.dom || this.container ? 0
@@ -13199,7 +13222,7 @@
                     this.container.classList.add(cls);
         }
     }
-    function rm$1(node) {
+    function rm(node) {
         let next = node.nextSibling;
         node.remove();
         return next;
@@ -13428,7 +13451,7 @@
         let panel = getPanel(view, createLineDialog);
         if (!panel) {
             view.dispatch({
-                reconfigure: view.state.field(dialogField, false) == null ? { append: [panels(), dialogField, baseTheme$5] } : undefined,
+                reconfigure: view.state.field(dialogField, false) == null ? { append: [panels(), dialogField, baseTheme$3] } : undefined,
                 effects: dialogEffect.of(true)
             });
             panel = getPanel(view, createLineDialog);
@@ -13437,7 +13460,7 @@
             panel.dom.querySelector("input").focus();
         return true;
     };
-    const baseTheme$5 = EditorView.baseTheme({
+    const baseTheme$3 = EditorView.baseTheme({
         "$panel.gotoLine": {
             padding: "2px 6px 4px",
             "& label": { fontSize: "80%" }
@@ -13558,7 +13581,7 @@
         get valid() { return !!this.search; }
     }
     const setQuery = StateEffect.define();
-    const togglePanel = StateEffect.define();
+    const togglePanel$1 = StateEffect.define();
     const searchState = StateField.define({
         create() {
             return new SearchState(new Query("", "", false), []);
@@ -13567,7 +13590,7 @@
             for (let effect of tr.effects) {
                 if (effect.is(setQuery))
                     value = new SearchState(effect.value, value.panel);
-                else if (effect.is(togglePanel))
+                else if (effect.is(togglePanel$1))
                     value = new SearchState(value.query, effect.value ? [createSearchPanel] : []);
             }
             return value;
@@ -13753,7 +13776,7 @@
             panel.dom.querySelector("[name=search]").focus();
         }
         else {
-            view.dispatch({ effects: togglePanel.of(true),
+            view.dispatch({ effects: togglePanel$1.of(true),
                 reconfigure: state ? undefined : { append: searchExtensions } });
         }
         return true;
@@ -13766,7 +13789,7 @@
         let panel = getPanel(view, createSearchPanel);
         if (panel && panel.dom.contains(view.root.activeElement))
             view.focus();
-        view.dispatch({ effects: togglePanel.of(false) });
+        view.dispatch({ effects: togglePanel$1.of(false) });
         return true;
     };
     /// Default search-related key bindings.
@@ -14012,7 +14035,7 @@
             scroll() { this.maybeMeasure(); }
         }
     });
-    const baseTheme$6 = EditorView.baseTheme({
+    const baseTheme$2 = EditorView.baseTheme({
         $tooltip: {
             position: "fixed",
             border: "1px solid #ddd",
@@ -14024,7 +14047,7 @@
     /// [`showTooltip`](#tooltip.showTooltip) to be used to create
     /// tooltips.
     function tooltips() {
-        return [tooltipPlugin, baseTheme$6];
+        return [tooltipPlugin, baseTheme$2];
     }
     /// Behavior by which an extension can provide a tooltip to be shown.
     const showTooltip = Facet.define();
@@ -14407,7 +14430,7 @@
     });
 
     const MaxInfoWidth = 300;
-    const baseTheme$7 = EditorView.baseTheme({
+    const baseTheme$1 = EditorView.baseTheme({
         "$tooltip.autocomplete": {
             "& > ul": {
                 fontFamily: "monospace",
@@ -14753,7 +14776,7 @@
             this.open = open;
         }
         static start() {
-            return new CompletionState(none$5, "cm-ac-" + Math.floor(Math.random() * 2e6).toString(36), null);
+            return new CompletionState(none, "cm-ac-" + Math.floor(Math.random() * 2e6).toString(36), null);
         }
         update(tr) {
             let { state } = tr, conf = state.facet(completionConfig);
@@ -14773,7 +14796,7 @@
                     open = open && open.setSelected(effect.value, this.id);
             return active == this.active && open == this.open ? this : new CompletionState(active, this.id, open);
         }
-        get tooltip() { return this.open ? this.open.tooltip : none$5; }
+        get tooltip() { return this.open ? this.open.tooltip : none; }
         get attrs() { return this.open ? this.open.attrs : baseAttrs; }
     }
     function sameResults(a, b) {
@@ -14798,7 +14821,7 @@
             "aria-owns": id
         };
     }
-    const baseAttrs = { "aria-autocomplete": "list" }, none$5 = [];
+    const baseAttrs = { "aria-autocomplete": "list" }, none = [];
     function cmpOption(a, b) {
         let dScore = b.match[0] - a.match[0];
         if (dScore)
@@ -15181,7 +15204,7 @@
             completionConfig.of(config),
             completionPlugin,
             completionKeymapExt,
-            baseTheme$7,
+            baseTheme$1,
             tooltips()
         ];
     }
@@ -15313,7 +15336,7 @@
             let startI = lines.length, minIndent = 1e9;
             for (let pos = from; pos <= to;) {
                 let line = state.doc.lineAt(pos);
-                if (line.from > prevLine) {
+                if (line.from > prevLine && (from == to || to > line.from)) {
                     prevLine = line.from;
                     let token = getConfig(state, pos).line;
                     if (!token)
@@ -15509,7 +15532,7 @@
         static get(base, mods) {
             if (!mods.length)
                 return base;
-            let exists = mods[0].instances.find(t => t.base == base && sameArray$1(mods, t.modified));
+            let exists = mods[0].instances.find(t => t.base == base && sameArray(mods, t.modified));
             if (exists)
                 return exists;
             let set = [], tag = new Tag(set, base, mods);
@@ -15522,7 +15545,7 @@
             return tag;
         }
     }
-    function sameArray$1(a, b) {
+    function sameArray(a, b) {
         return a.length == b.length && a.every((x, i) => x == b[i]);
     }
     function permute(array) {
@@ -15691,7 +15714,7 @@
         return true;
     }
     const t = Tag.define;
-    const comment = t(), name = t(), literal = t(), string = t(literal), number = t(literal), content = t(), heading = t(content), keyword = t(), operator = t(), punctuation = t(), bracket = t(punctuation), meta = t();
+    const comment = t(), name = t(), typeName = t(name), literal = t(), string = t(literal), number = t(literal), content = t(), heading = t(content), keyword = t(), operator = t(), punctuation = t(), bracket = t(punctuation), meta = t();
     /// The default set of highlighting [tags](#highlight.Tag^define) used
     /// by regular language packages and themes.
     ///
@@ -15724,8 +15747,10 @@
         name,
         /// The [name](#highlight.tags.name) of a variable.
         variableName: t(name),
-        /// A type or tag [name](#highlight.tags.name).
-        typeName: t(name),
+        /// A type [name](#highlight.tags.name).
+        typeName: typeName,
+        /// A tag name (subtag of [`typeName`](#highlight.tags.typeName)).
+        tagName: t(typeName),
         /// A property, field, or attribute [name](#highlight.tags.name).
         propertyName: t(name),
         /// The [name](#highlight.tags.name) of a class.
@@ -15954,11 +15979,11 @@
                 }),
                 panels(),
                 hoverTooltip(lintTooltip),
-                baseTheme$8
+                baseTheme
             ] };
     }
     const setDiagnosticsEffect = StateEffect.define();
-    const togglePanel$1 = StateEffect.define();
+    const togglePanel = StateEffect.define();
     const movePanelSelection = StateEffect.define();
     const lintState = StateField.define({
         create() {
@@ -15988,7 +16013,7 @@
                     }));
                     value = new LintState(ranges, value.panel, findDiagnostic(ranges));
                 }
-                else if (effect.is(togglePanel$1)) {
+                else if (effect.is(togglePanel)) {
                     value = new LintState(value.diagnostics, effect.value ? LintPanel.open : null, value.selected);
                 }
                 else if (effect.is(movePanelSelection)) {
@@ -16028,7 +16053,7 @@
     const openLintPanel = (view) => {
         let field = view.state.field(lintState, false);
         if (!field || !field.panel)
-            view.dispatch({ effects: togglePanel$1.of(true),
+            view.dispatch({ effects: togglePanel.of(true),
                 reconfigure: maybeEnableLint(view.state) });
         let panel = getPanel(view, LintPanel.open);
         if (panel)
@@ -16040,7 +16065,7 @@
         let field = view.state.field(lintState, false);
         if (!field || !field.panel)
             return false;
-        view.dispatch({ effects: togglePanel$1.of(false) });
+        view.dispatch({ effects: togglePanel.of(false) });
         return true;
     };
     /// Move the selection to the next diagnostic.
@@ -16299,7 +16324,7 @@
   </svg>`;
         return `url('data:image/svg+xml;base64,${btoa(svg)}')`;
     }
-    const baseTheme$8 = EditorView.baseTheme({
+    const baseTheme = EditorView.baseTheme({
         $diagnostic: {
             padding: "3px 6px 3px 8px",
             marginLeft: "-1px",
@@ -16445,7 +16470,7 @@
     ];
 
     document.querySelector('#form');
-    document.querySelector('#button1');
+    const button1 = document.querySelector('#button1');
     const editorTransformedEl = document.querySelector('#editor-transformed');
     const editorRowEl = document.querySelector('#editor-raw');
 
@@ -16453,41 +16478,25 @@
       extensions: basicSetup
     });
 
-    new EditorView({
+    let editorRow = new EditorView({
       state: startState,
       parent: editorRowEl,
-      dispatch: syncDispatch()
     });
 
-    new EditorView({
+    let editorTransformed = new EditorView({
       state: startState,
       parent: editorTransformedEl,
-      dispatch: syncDispatch()
     });
 
-    function syncDispatch(from, to) {
-      Annotation.define();
-        //     if (changes.empty && !annotation(syncAnnotation)) {
-        //       editorTransformed.dispatch({
-        //         changes,
-        //         annotations: syncAnnotation.of(true),
-        //   })
-        // }
-
-    }
-
-
-    // editorRow.addEventListener('keyup', (evt) => {
-    //   evt.preventDefault();
-    //   const data = editorRow.value;
-    // })
-
-    // editorTransformed.addEventListener('change', (evt) => {
-    //   evt.preventDefault();
-    //   if (editorRow.value) {
-    //     editorTransformed.value = editorRow.value;
-    //   }
-      
-    //   })
+    button1.addEventListener('click', () => {
+      let valueOfeditorRow = editorRow.state.doc.text.toString();
+      editorTransformed.state.doc.text.toString();
+      //let transaction = editorTransformed.state.update({changes: {from: 0, insert: valueOfeditorRow}});
+      console.log(editorTransformed.state);
+      let transaction = editorTransformed.state.update({newDoc: Text.of(valueOfeditorRow.split('\n'))});
+      //et transaction = editorTransformed.state.update({doc: {text:editorRow.state.doc.text}});
+      editorTransformed.dispatch(transaction);
+      console.log(editorTransformed.state);
+    });
 
 }());
