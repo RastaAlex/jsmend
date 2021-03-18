@@ -16492,9 +16492,7 @@
       let valueOfeditorRow = editorRow.state.doc.text.toString();
       editorTransformed.state.doc.text.toString();
       //let transaction = editorTransformed.state.update({changes: {from: 0, insert: valueOfeditorRow}});
-      console.log(editorTransformed.state);
       let transaction = editorTransformed.state.update({newDoc: Text.of(valueOfeditorRow.split('\n'))});
-      //et transaction = editorTransformed.state.update({doc: {text:editorRow.state.doc.text}});
       editorTransformed.dispatch(transaction);
       console.log(editorTransformed.state);
     });

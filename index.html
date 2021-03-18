@@ -4,25 +4,23 @@
         <title>Editor</title>
 </head>
 <body>
-  <button type="submit" id= "button1">Apply</button>
+  <!-- <button type="submit" id= "button1">Apply</button> -->
   <header>
-    <style>.cm-wrap{height: 150px; width: 150px;}</style>
+    <link rel="stylesheet" href="./copenhagen/copenhagen.0-1-0.min.css">
   </header>
-  <div id="editor-raw">
   <h1>Editor 1</h1>
-    <form id="form" action="">
-    </form>
+  <div class="editor-raw" data-language="html" data-maxrows="20">
        </div>
-       <div id="editor-transformed">
-        <h1>Editor 2</h1>
-       </div>
+       <h1>Editor 2</h1>
+       <div class="editor-transformed" data-language="html" data-maxrows="20">
+        </div>
   <table id="Table places" style="width:100%">
     <tr>
       <th>Error</th>
       <th>Line</th> 
     </tr>
-  </table>
-  
-  <script src="/dist/editor.bundle.js"></script>
+  </table> 
+  <script src="./copenhagen/copenhagen.0-1-0.min.js"></script>
+  <script src="./client/editors.js"></script>
 </body>
 </html>
