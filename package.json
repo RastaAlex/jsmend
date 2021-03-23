@@ -33,6 +33,8 @@
     "rollup": "^2.38.5"
   },
   "devDependencies": {
+    "date-fns": "*",
+    "dword": "^13.0.4",
     "eslint": "^7.19.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-putout": "^7.1.1",

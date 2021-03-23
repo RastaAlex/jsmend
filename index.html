@@ -2,25 +2,23 @@
 <html>
     <head>
         <title>Editor</title>
+        <link rel="stylesheet" href="/style.css">
 </head>
 <body>
   <!-- <button type="submit" id= "button1">Apply</button> -->
-  <header>
-    <link rel="stylesheet" href="./copenhagen/copenhagen.0-1-0.min.css">
-  </header>
   <h1>Editor 1</h1>
-  <div class="editor-raw" data-language="html" data-maxrows="20">
+  <div id="js-editor-raw" class="editor-raw">
        </div>
        <h1>Editor 2</h1>
-       <div class="editor-transformed" data-language="html" data-maxrows="20">
+       <div id="js-editor-transformed" class="editor-transformed">
         </div>
-  <table id="Table places" style="width:100%">
+  <table id="js-table-places" class="table-places">
     <tr>
       <th>Error</th>
       <th>Line</th> 
     </tr>
   </table> 
-  <script src="./copenhagen/copenhagen.0-1-0.min.js"></script>
-  <script src="./client/editors.js"></script>
+  <script src="/dword/dword.js"></script>
+  <script src="./client/client.js"></script>
 </body>
 </html>
