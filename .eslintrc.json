@@ -1,1 +1,17 @@
-{    "extends": [        "plugin:node/recommended",        "plugin:putout/ide"    ],    "plugins": [        "putout",        "node"    ]}
+{
+    "env": {
+        "browser": true,
+        "node": true
+    },
+    "rules": {
+        "linebreak-style":"off"
+    },
+    "extends": [
+        "plugin:node/recommended",
+        "plugin:putout/ide"
+    ],
+    "plugins": [
+        "putout",
+        "node"
+    ]
+}

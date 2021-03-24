@@ -1,24 +1,27 @@
 <!doctype html>
 <html>
-    <head>
-        <title>Editor</title>
-        <link rel="stylesheet" href="/style.css">
+
+<head>
+  <title>Editor</title>
+  <link rel="stylesheet" href="/style.css">
 </head>
+
 <body>
-  <!-- <button type="submit" id= "button1">Apply</button> -->
   <h1>Editor 1</h1>
-  <div id="js-editor-raw" class="editor-raw">
-       </div>
-       <h1>Editor 2</h1>
-       <div id="js-editor-transformed" class="editor-transformed">
-        </div>
+  <div id="js-editor-raw" class="editor">
+  </div>
+  <button type="submit" id= "transform">Transform</button>
+  <h1>Editor 2</h1>
+  <div id="js-editor-transformed" class="editor">
+  </div>
   <table id="js-table-places" class="table-places">
     <tr>
       <th>Error</th>
-      <th>Line</th> 
+      <th>Line</th>
     </tr>
-  </table> 
+  </table>
   <script src="/dword/dword.js"></script>
   <script src="./client/client.js"></script>
 </body>
+
 </html>
