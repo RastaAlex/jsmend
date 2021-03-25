@@ -12,14 +12,10 @@ const dword = require('dword');
 app.use(express.static(join(__dirname, '..')));
 app.use(dword());
 
-// io.on('connection', (socket) => {
-//     console.log('user connected');
-//     socket.on('keyup', (evt) => {
-//         socket.send(evt);
-//     })
-//     socket.on('disconnect', () => {
-//         console.log('user disconnected');
-//     })
+
+// app.get('/transform.html', (req, res) => {
+//     res.send('hello');
+//     console.log('hello');
 // });
 
 http.listen(port, () => {

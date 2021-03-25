@@ -15,6 +15,7 @@ async function main() {
     button.addEventListener('click', () => {
         const valueEditorRaw = editorRaw.getValue();
         editorTransformed.setValue(valueEditorRaw);
+        console.log(valueEditorRaw);
     }); 
 }
 
