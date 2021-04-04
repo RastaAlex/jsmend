@@ -11,7 +11,7 @@ const parseOptions = require('putout/parse-options');
 const tryCatch = require('try-catch');
 const pullout = require('pullout');
 const dword = require('dword');
-const {parseError} = require('./parse-error');
+const parseError = require('putout/parse-error');
 
 app.use(express.static(join(__dirname, '..')));
 app.use(dword());
