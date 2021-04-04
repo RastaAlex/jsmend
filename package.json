@@ -17,9 +17,7 @@
     "test": "madrun test",
     "watch:coverage": "madrun watch:coverage",
     "watch:test": "madrun watch:test",
-    "watcher": "madrun watcher",
-    "watch:build": "madrun watch:build",
-    "build": "madrun build"
+    "watcher": "madrun watcher"
   },
   "keywords": [],
   "author": "",
