@@ -22,7 +22,7 @@ async function main() {
         const {
             code,
             places
-        } = await request('http://localhost:4030/transform', 'POST', valueEditorRaw);
+        } = await request('/transform', 'POST', valueEditorRaw);
         editorTransformed.setValue(code);
         rule.textContent = places[0].rule;
         message.textContent = places[0].message;
